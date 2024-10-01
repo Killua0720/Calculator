@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState } from 'react';
 
-// Key component to display a button and handle clicks
+// Button component
 function Key({ label, clickHandler }) {
   return (
     <button onClick={() => clickHandler(label)}>
@@ -10,7 +10,7 @@ function Key({ label, clickHandler }) {
   );
 }
 
-// Display component to show the current value
+// Display component
 function Display({ value }) {
   return (
     <div className="display">
@@ -19,80 +19,69 @@ function Display({ value }) {
   );
 }
 
+// Main Calculator App
 function App() {
-  const [displayValue, setDisplayValue] = useState('0'); 
-  const [firstOperand, setFirstOperand] = useState(null); 
-  const [operator, setOperator] = useState(null); 
-  const [waitingForSecondOperand, setWaitingForSecondOperand] = useState(false); 
+  const [displayValue, setDisplayValue] = useState("0");
+  const [previousValue, setPreviousValue] = useState(null);
+  const [operator, setOperator] = useState(null);
 
- 
   const clickHandler = (label) => {
-    if (typeof label === 'number') {
-      handleNumber(label);
-    } else if (label === 'C') {
-      clear();
-    } else if (label === '=') {
-      calculate();
-    } else {
-      handleOperator(label);
-    }
-  };
-
- 
-  const handleNumber = (num) => {
-    if (waitingForSecondOperand) {
-      setDisplayValue(String(num));
-      setWaitingForSecondOperand(false);
-    } else {
-      setDisplayValue(displayValue === '0' ? String(num) : displayValue + num);
-    }
-  };
-
-
-  const handleOperator = (nextOperator) => {
-    const inputValue = parseFloat(displayValue);
-
-    if (firstOperand == null) {
-      setFirstOperand(inputValue);
-    } else if (operator) {
-      const result = performCalculation[operator](firstOperand, inputValue);
-      setDisplayValue(String(result));
-      setFirstOperand(result);
+    if (label === "SORIANO") {
+      setDisplayValue("Jan Raymond Soriano");
+      return;
     }
 
-    setWaitingForSecondOperand(true);
-    setOperator(nextOperator);
-  };
-
-  const performCalculation = {
-    '+': (first, second) => first + second,
-    '-': (first, second) => first - second,
-    'x': (first, second) => first * second,
-    '÷': (first, second) => first / second
-  };
-
- 
-  const calculate = () => {
-    if (operator && firstOperand != null) {
-      const secondOperand = parseFloat(displayValue);
-      const result = performCalculation[operator](firstOperand, secondOperand);
-      setDisplayValue(String(result));
-      setFirstOperand(null);
+    if (label === "C") {
+      setDisplayValue("0");
+      setPreviousValue(null);
       setOperator(null);
-      setWaitingForSecondOperand(false);
+      return;
     }
-  };
 
+    if (["+", "-", "x", "÷"].includes(label)) {
+      setOperator(label);
+      setPreviousValue(displayValue);
+      setDisplayValue("0");
+      return;
+    }
 
-  const clear = () => {
-    setDisplayValue('0');
-    setFirstOperand(null);
-    setOperator(null);
-    setWaitingForSecondOperand(false);
+    if (label === "=") {
+      if (operator && previousValue !== null) {
+        const current = parseFloat(displayValue);
+        const previous = parseFloat(previousValue);
+        let result;
+
+        switch (operator) {
+          case "+":
+            result = previous + current;
+            break;
+          case "-":
+            result = previous - current;
+            break;
+          case "x":
+            result = previous * current;
+            break;
+          case "÷":
+            result = previous / current;
+            break;
+          default:
+            result = displayValue;
+        }
+
+        setDisplayValue(result.toString());
+        setOperator(null);
+        setPreviousValue(null);
+      }
+      return;
+    }
+
+    setDisplayValue((prev) => (prev === "0" ? label.toString() : prev + label.toString()));
   };
 
   return (
     <div className="App">
+      <h1>Calculator of Jan Raymond Soriano - IT3A</h1>
+
       <div className="Calc">
         <div className="Disp">
           <Display value={displayValue} />
@@ -115,6 +104,10 @@ function App() {
           <Key label={0} clickHandler={clickHandler} />
           <Key label={"+"} clickHandler={clickHandler} />
           <Key label={"="} clickHandler={clickHandler} />
+        </div>
+
+        <div className="surnameButton">
+          <Key label={"SORIANO"} clickHandler={clickHandler} />
         </div>
       </div>
     </div>
